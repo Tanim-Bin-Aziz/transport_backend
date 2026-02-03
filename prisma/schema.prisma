@@ -1,0 +1,139 @@
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+  // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+  // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+  generator client {
+    provider = "prisma-client-js"
+  }
+
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
+  model Admin {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    password  String
+    name      String?
+    createdAt DateTime @default(now())
+  }
+
+  model Student {
+    id             Int      @id @default(autoincrement())
+    studentCode    String   @unique
+    firstName      String
+    lastName       String?
+    email          String?  @unique
+    phone          String?
+    address        String?
+    className      String
+    section        String?
+    rollNumber     String?
+    status         String   @default("ACTIVE")
+    transports     StudentTransport[]
+    feeAssignments StudentFeeAssignment[]
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+  }
+
+  model Vehicle {
+    id            Int      @id @default(autoincrement())
+    vehicleNumber String   @unique
+    driverName    String
+    helperName    String?
+    contactNumber String
+    route         Route?
+    assignment    VehicleAssignment?
+    status        String   @default("ACTIVE")
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+  }
+
+  model Route {
+    id                Int      @id @default(autoincrement())
+    routeName         String
+    startPoint        String
+    endPoint          String
+    vehicleId         Int?      @unique
+    vehicle           Vehicle?   @relation(fields: [vehicleId], references: [id])
+    assignment        VehicleAssignment? 
+    status            String   @default("ACTIVE")
+    pickupPoints      RoutePickupPoint[]
+    transportFee      TransportFee?
+    studentTransports StudentTransport[]
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+  }
+  model VehicleAssignment {
+  id        Int      @id @default(autoincrement())
+  vehicleId Int      @unique
+  routeId   Int      @unique
+  status    String   @default("ASSIGNED")
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  route     Route    @relation(fields: [routeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+  model PickupPoint {
+    id        Int      @id @default(autoincrement())
+    name      String
+    location  String
+    status    String   @default("ACTIVE")
+    routes    RoutePickupPoint[]
+    students  StudentTransport[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+  }
+
+  model RoutePickupPoint {
+    id            Int @id @default(autoincrement())
+    routeId       Int
+    pickupPointId Int
+    stopOrder     Int
+    route         Route       @relation(fields: [routeId], references: [id])
+    pickupPoint   PickupPoint @relation(fields: [pickupPointId], references: [id])
+    @@unique([routeId, pickupPointId])
+  }
+
+  model TransportFee {
+    id           Int      @id @default(autoincrement())
+    routeId      Int      @unique
+    feeName      String
+    amount       Float
+    billingCycle String
+    feeType      String
+    status       String   @default("ACTIVE")
+    route        Route    @relation(fields: [routeId], references: [id])
+    studentFees  StudentFeeAssignment[]
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+  }
+
+  model StudentTransport {
+    id            Int      @id @default(autoincrement())
+    studentId     Int
+    routeId       Int
+    pickupPointId Int
+    status        String   @default("ACTIVE")
+    student       Student     @relation(fields: [studentId], references: [id])
+    route         Route       @relation(fields: [routeId], references: [id])
+    pickupPoint   PickupPoint @relation(fields: [pickupPointId], references: [id])
+    assignedAt    DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+  }
+
+  model StudentFeeAssignment {
+    id             Int      @id @default(autoincrement())
+    studentId      Int
+    transportFeeId Int
+    amount         Float
+    billingMonth   DateTime
+    paymentStatus  String   @default("UNPAID")
+    student        Student      @relation(fields: [studentId], references: [id])
+    transportFee   TransportFee @relation(fields: [transportFeeId], references: [id])
+    createdAt      DateTime @default(now())
+    @@unique([studentId, transportFeeId, billingMonth])
+  }  
