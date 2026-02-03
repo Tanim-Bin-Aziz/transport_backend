@@ -5,7 +5,6 @@ import type {
 } from "./routePickup.type.js";
 
 export const createRoutePickup = async (data: CreateRoutePickupInput) => {
-  // ✅ prevent duplicate pickup in same route (db already has @@unique(routeId, pickupPointId))
   const exists = await prisma.routePickupPoint.findFirst({
     where: {
       OR: [
@@ -41,11 +40,9 @@ export const updateRoutePickup = async (
   id: number,
   data: UpdateRoutePickupInput,
 ) => {
-  // ✅ fetch current row to check conflict within same route
   const current = await prisma.routePickupPoint.findUnique({ where: { id } });
   if (!current) throw new Error("Route pickup not found");
 
-  // ✅ prevent duplicate stopOrder in same route
   const conflict = await prisma.routePickupPoint.findFirst({
     where: {
       routeId: current.routeId,

@@ -17,7 +17,6 @@ const createVehicle = async (req: Request, res: Response) => {
     const vehicle = await vehicleService.createVehicle(body);
     return res.status(201).json(vehicle);
   } catch (err: unknown) {
-    // duplicate unique vehicleNumber
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"
@@ -71,7 +70,6 @@ const deleteVehicle = async (req: Request, res: Response) => {
       if (err.code === "P2025")
         return res.status(404).json({ message: "Vehicle not found" });
 
-      // foreign key constraint (vehicle assigned to route/assignment)
       if (err.code === "P2003") {
         return res.status(400).json({
           message: "Cannot delete vehicle. It is assigned to a route.",

@@ -13,7 +13,6 @@ const remainDaysOfBillingMonth = (billingMonth: Date, now = new Date()) => {
   const start = monthStart(billingMonth);
   const endExclusive = nextMonthStart(billingMonth);
 
-  // clamp now between [start, endExclusive]
   const tNow = now.getTime();
   const tStart = start.getTime();
   const tEnd = endExclusive.getTime();
@@ -29,13 +28,11 @@ export const assignTransport = async (
   pickupPointId: number,
 ) =>
   prisma.$transaction(async (tx) => {
-    // 1) make old assignments inactive
     await tx.studentTransport.updateMany({
       where: { studentId, status: "ACTIVE" },
       data: { status: "INACTIVE" },
     });
 
-    // 2) create new assignment
     const transport = await tx.studentTransport.create({
       data: { studentId, routeId, pickupPointId, status: "ACTIVE" },
       include: {
@@ -50,12 +47,10 @@ export const assignTransport = async (
       },
     });
 
-    // 3) find route fee
     const routeFee = await tx.transportFee.findUnique({
       where: { routeId },
     });
 
-    // 4) auto assign fee for current month (no duplicate)
     if (routeFee) {
       const start = monthStart(new Date());
       const end = nextMonthStart(new Date());
@@ -77,12 +72,10 @@ export const assignTransport = async (
             studentId,
             transportFeeId: routeFee.id,
             amount: routeFee.amount,
-            billingMonth: start, // month start
-            // paymentStatus default UNPAID from schema
+            billingMonth: start,
           },
         });
       } else {
-        // optional: update amount if fee amount changed
         await tx.studentFeeAssignment.update({
           where: { id: existing.id },
           data: { amount: routeFee.amount },
@@ -152,8 +145,6 @@ export const getRoutesWithDetails = async () => {
   }));
 };
 
-// ✅ Fees record for table:
-// Student | Student ID | Fee Name | Amount | Month | Year | Remain days | Fee Status
 export const getStudentTransportFeeRecords = async () => {
   const list = await prisma.studentFeeAssignment.findMany({
     include: {

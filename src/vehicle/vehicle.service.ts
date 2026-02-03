@@ -8,7 +8,7 @@ export const createVehicle = (input: CreateVehicleInput) => {
     driverName: input.driverName,
     contactNumber: input.contactNumber,
     status: input.status ?? "ACTIVE",
-    helperName: input.helperName ?? null, // helperName String? => string|null
+    helperName: input.helperName ?? null,
   };
 
   return prisma.vehicle.create({ data });
@@ -24,7 +24,6 @@ export const updateVehicle = (id: number, input: UpdateVehicleInput) => {
     data.contactNumber = input.contactNumber;
   if (input.status !== undefined) data.status = input.status;
 
-  // helperName optional -> store null when empty
   if (input.helperName !== undefined)
     data.helperName = input.helperName ?? null;
 

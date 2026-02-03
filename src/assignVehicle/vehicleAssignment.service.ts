@@ -16,7 +16,6 @@ export const assignVehicle = async (vehicleId: number, routeId: number) => {
       throw new Error("Vehicle or Route is already assigned");
     }
 
-    // connect vehicle to route
     const route = await tx.route.update({
       where: { id: routeId },
       data: { vehicleId },
@@ -30,7 +29,6 @@ export const assignVehicle = async (vehicleId: number, routeId: number) => {
       },
     });
 
-    // create assignment row
     await tx.vehicleAssignment.create({
       data: { vehicleId, routeId, status: ASSIGNED },
     });
@@ -99,7 +97,6 @@ export const updateAssignment = async (
       throw new Error("Vehicle or Route is already assigned");
     }
 
-    // if route changes, clear old route vehicle
     if (newRouteId !== current.routeId) {
       await tx.route.update({
         where: { id: current.routeId },
@@ -107,7 +104,6 @@ export const updateAssignment = async (
       });
     }
 
-    // always ensure new route points to new vehicle
     await tx.route.update({
       where: { id: newRouteId },
       data: { vehicleId: newVehicleId },

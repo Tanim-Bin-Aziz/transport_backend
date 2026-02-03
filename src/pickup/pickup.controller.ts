@@ -36,7 +36,6 @@ const updatePickup = async (req: Request, res: Response) => {
 
     const body = updatePickupDto.parse(req.body);
 
-    // ✅ explicitly type it so status becomes union, not string
     const updateData: UpdatePickupInput = {
       ...(body.name !== undefined ? { name: body.name } : {}),
       ...(body.location !== undefined ? { location: body.location } : {}),
