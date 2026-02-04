@@ -1,4 +1,4 @@
-## Backend Setup (Express + TypeScript + Prisma)
+## Backend Setup (Express + Node + PostgreSQL + Prisma)
 
 ### Requirements
 - Node.js 18+ (recommended 20)
