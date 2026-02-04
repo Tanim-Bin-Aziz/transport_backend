@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger.config.js";
 
 import authRoutes from "./auth/auth.routes.js";
 import studentRoutes from "./student/student.route.js";
@@ -29,4 +31,5 @@ app.use("/transport-fees", feeRouter);
 app.use("/routes-pickup", routePickupRoutes);
 app.use("/transport-assignments", transportRoutes);
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 export default app;
