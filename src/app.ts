@@ -26,6 +26,12 @@ app.get("/", (req, res) => {
     message: "Transport API is running 🚀",
   });
 });
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "transport-backend",
+  });
+});
 
 app.use("/auth", authRoutes);
 app.use("/students", studentRoutes);
