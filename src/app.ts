@@ -16,9 +16,10 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin:
+    origin: [
+      "https://transport-frontend-pi.vercel.app",
       "https://transport-frontend-5ejsn37j0-tanimbinazizs-projects.vercel.app",
-    credentials: true,
+    ],
   }),
 );
 app.get("/", (req, res) => {
