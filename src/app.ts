@@ -16,7 +16,8 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      "https://transport-frontend-5ejsn37j0-tanimbinazizs-projects.vercel.app",
     credentials: true,
   }),
 );
