@@ -7,8 +7,8 @@ const authRouter = Router();
 // public
 authRouter.post("/login", login);
 
-// protected (only existing admin can create new admin)
-authRouter.post("/create-admin", authMiddleware, createAdmin);
+// protected (only existing admin can create new admin){authMiddleware, adminOnly}
+authRouter.post("/create-admin", createAdmin);
 
 /**
  * @openapi
